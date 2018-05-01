@@ -6,6 +6,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <cstring>
+#include <list>
 
 #include "common.h"
 
@@ -15,6 +16,7 @@ int main(int argc, char const *argv[]) {
   char welcome_msg [30] ="Üdvözlet, add meg a neved: ";
   char client1_ans[255];
   char client2_ans[255];
+  std::srand ( unsigned ( std::time(0) ) );
 
     memset(&client1_ans, 0, sizeof client1_ans);
     memset(&client2_ans, 0, sizeof client2_ans);
@@ -49,33 +51,75 @@ int main(int argc, char const *argv[]) {
   std::cout << client1_name << " " << client2_name<<std::endl;
   //Üdvözlés vége
 
-  int client1_deck[32];
-  int client2_deck[32];
-  memset(&client1_deck, 0, sizeof client1_deck);
-  memset(&client2_deck, 0, sizeof client2_deck);
+  std::vector<int> client1_deck;
+  std::vector<int> client2_deck;
+
+
+std::vector<Card> cards (32);
 
   make_deck(cards);
 
   std::vector<Card> shuffled_deck(shuffle_deck(cards));
-  int i = 0;
+  std::list<Card> dealer_list;
+  std::copy(shuffled_deck.begin(), shuffled_deck.end(), std::back_inserter( dealer_list ) );
+
   while(1){
-    char players_cards[255];
-        sprintf(players_cards,"%ld",shuffled_deck[0].id );
-        send(client1_FD,players_cards,sizeof(players_cards),0);
+    char  server_ans[255];
+
+
+        sprintf(server_ans,"%ld",dealer_list.front().id );
+        client1_deck.push_back(dealer_list.front().id);
+        dealer_list.pop_front();
+
+        send(client1_FD,server_ans,sizeof(server_ans),0);
+
+        sprintf(server_ans,"%ld",dealer_list.front().id );
+        client1_deck.push_back(dealer_list.front().id);
+        dealer_list.pop_front();
+
+        send(client1_FD,server_ans,sizeof(server_ans),0);
+
+        sprintf(server_ans,"%ld",dealer_list.front().id );
+        client2_deck.push_back(dealer_list.front().id);
+        dealer_list.pop_front();
+
+        send(client2_FD,server_ans,sizeof(server_ans),0);
+
+        sprintf(server_ans,"%ld",dealer_list.front().id );
+        client2_deck.push_back(dealer_list.front().id);
+        dealer_list.pop_front();
+
+        send(client2_FD,server_ans,sizeof(server_ans),0);
+
+     while(1){
+
+        recv(client1_FD,&client1_ans,sizeof(client1_ans),0);
+
+        if(client1_ans == "Kérek"){
+          sprintf(server_ans,"%ld",dealer_list.front().id );
+          client1_deck.push_back(dealer_list.front().id);
+          dealer_list.pop_front();
+        }
+        send(client1_FD,server_ans,sizeof(server_ans),0);
+
+
+        recv(client2_FD,&client2_ans,sizeof(client2_ans),0);
+
+        if(client2_ans == "Kérek"){
+          sprintf(server_ans,"%ld",dealer_list.front().id );
+          client2_deck.push_back(dealer_list.front().id);
+          dealer_list.pop_front();
+        }
+        send(client2_FD,server_ans,sizeof(server_ans),0);
 
 
 
-        sprintf(players_cards,"%ld",shuffled_deck[1].id );
-        send(client1_FD,players_cards,sizeof(players_cards),0);
 
-        sprintf(players_cards,"%ld",shuffled_deck[2].id );
-        send(client2_FD,players_cards,sizeof(players_cards),0);
-
-
-
-        sprintf(players_cards,"%ld",shuffled_deck[3].id );
-        send(client2_FD,players_cards,sizeof(players_cards),0);
         break;
+
+      }
+
+      break;
   }
 
 

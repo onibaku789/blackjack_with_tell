@@ -1,7 +1,7 @@
 #ifndef COMMON_H
 #define COMMON_H
 
-#include <iostream>
+
 #include <string>
 #include <iostream>     // std::cout
 #include <algorithm>    // std::random_shuffle
@@ -23,16 +23,16 @@ public:
  std::string vals[] = {"Hét","Nyolc","Kilenc","Tíz","Alsó","Felső","Király","Ász"};
 
 
-std::vector<Card> cards (32);
 
 void make_deck (std::vector<Card>& _cards){
-
+        int j = 0;
   for(int i=0; i < _cards.size();i++){
 
         _cards[i].id = i;
 
-
-        _cards[i].color = colors[i%4];
+          if ((i%8)==0 && i >0)
+          j++;
+        _cards[i].color = colors[j];
           _cards[i].val = vals[i%8];
 
         if(  _cards[i].val == "Ász")
@@ -78,25 +78,23 @@ for(int i =0;i<_cards.size();i++)
 
 }
 
-void show_cards(const std::vector<Card> & _cards){
+void show_hand( std::vector<int>  hand,std::vector<Card> &cards) {
 
+int sum = 0;
+  for(int i = 0; i< hand.size();i++){
+    for(int j = 0; j < cards.size();j++){
+      if(hand[i] == cards[j].id){
+    std::cout << cards[j].color << "  " << cards[j].val << " | ";
+    sum+=cards[j].card_val;
+}
+  }
 
-  for(int i =0;i<_cards.size();i++)
-    std::cout << _cards[i].color << "  " << _cards[i].val << " | ";
-
-    std::cout <<std::endl;
+  }
+    std::cout << "összesen: "<< sum <<std::endl;
 
 }
-void find_cards(std::vector<Card> &players_cards,int card_id){
 
-for(int i = 0; i<cards.size();i++){
-  if(card_id==cards[i].id){
-    players_cards.push_back(cards[i]);
-    std::cout<< i<<std::endl;
-        }
-    }
 
-}
 
 
 

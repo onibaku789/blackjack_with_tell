@@ -7,6 +7,7 @@
 #include <cstring>
 #include <vector>
 #include <arpa/inet.h>
+#include <list>
 
 
 #include "common.h"
@@ -34,20 +35,40 @@ int main(int argc, char const *argv[]) {
    std::cin >> name;
    send(client_FD,name,sizeof(name),0);
 //Üdvözlés vége
+std::vector<Card> cards (32);
+make_deck(cards);
 
-std::vector<Card> players_cards;
+std::vector<int> player_hand;
 while(1){
    recv(client_FD,&server_response,sizeof(server_response),0);
-    std::cout << server_response << std::endl;
-    int card_id;
-     sscanf(server_response, "%d", &card_id);
-      find_cards(players_cards,card_id);
+   std::cout << server_response << std::endl;
+   int card_id;
+   sscanf(server_response, "%d", &card_id);
+    player_hand.push_back(card_id);
 
     recv(client_FD,&server_response,sizeof(server_response),0);
     std::cout << server_response << std::endl;
     sscanf(server_response, "%d", &card_id);
-    find_cards(players_cards,card_id);
-    show_cards(players_cards);
+    player_hand.push_back(card_id);
+
+
+    show_hand(player_hand,cards);
+
+  while(1){
+    //todo print hand , userinterfacish
+    if(player_ans == "Kérek"){
+    send(client_FD,player_ans,sizeof(player_ans),0);
+
+    recv(client_FD,&server_response,sizeof(server_response),0);
+    std::cout << server_response << std::endl;
+    sscanf(server_response, "%d", &card_id);
+    player_hand.push_back(card_id);
+    }
+
+    break;
+  }
+
+
 
   break;
 }
