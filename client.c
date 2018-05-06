@@ -39,39 +39,67 @@ std::vector<Card> cards (32);
 make_deck(cards);
 
 std::vector<int> player_hand;
-while(1){
-   recv(client_FD,&server_response,sizeof(server_response),0);
-   std::cout << server_response << std::endl;
-   int card_id;
-   sscanf(server_response, "%d", &card_id);
-    player_hand.push_back(card_id);
+std::vector<int> player2_hand;
 
+while(1){
+  char player_ans[255];
+  int card_id;
+  memset(&player_ans, 0, sizeof player_ans);
+
+   recv(client_FD,&server_response,sizeof(server_response),0);
+   sscanf(server_response, "%d", &card_id);
+   player_hand.push_back(card_id);
+
+   show_hand(player_hand,cards);
+
+while(1){
+   if( 15 > sum(player_hand,cards)){
     recv(client_FD,&server_response,sizeof(server_response),0);
-    std::cout << server_response << std::endl;
     sscanf(server_response, "%d", &card_id);
     player_hand.push_back(card_id);
-
-
     show_hand(player_hand,cards);
 
-  while(1){
-    //todo print hand , userinterfacish
-    if(player_ans == "Kérek"){
-    send(client_FD,player_ans,sizeof(player_ans),0);
-
-    recv(client_FD,&server_response,sizeof(server_response),0);
-    std::cout << server_response << std::endl;
-    sscanf(server_response, "%d", &card_id);
-    player_hand.push_back(card_id);
     }
+    else if( sum(player_hand,cards) < 22)
+     {
+      std::cout<< "Lapkérés:k , Megállás:m "<<std::endl;
+      std::cin >> player_ans;
+      send(client_FD,player_ans,sizeof(player_ans),0);
+      if( strcmp(player_ans, "k") == 0){
+        std::cout << "Lapot kértem"<< std::endl;
+      recv(client_FD,&server_response,sizeof(server_response),0);
+      sscanf(server_response, "%d", &card_id);
+      player_hand.push_back(card_id);
+      show_hand(player_hand,cards);
+      }
+      std::cout << "Nem lapot kértem"<< std::endl;
+      if( strcmp(player_ans, "m")==0 || sum(player_hand,cards) > 21)
+      break;
+      }
 
-    break;
-  }
+}
+      int player2_hand_size,player2_card=0;
+      recv(client_FD,&server_response,sizeof(server_response),0);
+      sscanf(server_response,"%d",&player2_hand_size );
 
+      for(int i = 0; i < player2_hand_size; i++ ){
+        recv(client_FD,&server_response,sizeof(server_response),0);
+        sscanf(server_response,"%d",&player2_card );
+        player2_hand.push_back(player2_card);
+
+      }
+
+
+std::cout << "A másik játékos lapjai: " << std::endl;
+show_hand(player2_hand,cards);
+std::cout << "A saját lapjaid: " << std::endl;
+show_hand(player_hand,cards);
 
 
   break;
 }
+
+
 
 
 

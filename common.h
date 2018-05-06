@@ -17,7 +17,7 @@ public:
   std::string color;
   int card_val;
   std::string val;
- bool operator==(const int & id) const { return this->id == id;}
+// bool operator==(const int & id) const { return this->id == id;}
 }  ;
  std::string colors []  = {"Tök","Makk","Piros","Zöld"};
  std::string vals[] = {"Hét","Nyolc","Kilenc","Tíz","Alsó","Felső","Király","Ász"};
@@ -31,9 +31,9 @@ void make_deck (std::vector<Card>& _cards){
         _cards[i].id = i;
 
           if ((i%8)==0 && i >0)
-          j++;
+            j++;
         _cards[i].color = colors[j];
-          _cards[i].val = vals[i%8];
+        _cards[i].val = vals[i%8];
 
         if(  _cards[i].val == "Ász")
               _cards[i].card_val = 11;
@@ -92,6 +92,29 @@ int sum = 0;
   }
     std::cout << "összesen: "<< sum <<std::endl;
 
+}
+
+int sum( std::vector<int>  hand,std::vector<Card> &cards) {
+
+int sum = 0;
+  for(int i = 0; i< hand.size();i++){
+    for(int j = 0; j < cards.size();j++){
+      if(hand[i]==cards[j].id)
+    sum+=cards[j].card_val;
+      }
+  }
+    return sum;
+}
+
+int who_won (std::vector<int>  hand1,std::vector<int> hand2,std::vector<Card> &cards){
+  if(sum(hand1,cards) > 21 && sum(hand2,cards) > 21){
+      if(sum(hand1,cards) > sum(hand2,cards))
+      return 1;
+      else if(sum(hand1,cards) < sum(hand2,cards))
+      return 2;
+
+    }
+      return 0;
 }
 
 
