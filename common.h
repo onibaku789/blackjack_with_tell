@@ -63,17 +63,19 @@ std::vector<Card>  shuffle_deck(std::vector<Card> _cards){
 
 }
 
-void show_deck(const std::vector<Card> &_cards){
+void show_deck(std::vector<int> v,const std::vector<Card> &_cards){
 
+for(int j = 0; j<v.size();j++)
 for(int i =0;i<_cards.size();i++)
   {
+    if(v[j] == _cards[i].id){
     std::cout << "=======================" << std::endl;
 
     std::cout << _cards[i].id << std::endl;
     std::cout << _cards[i].color << std::endl;
     std::cout << _cards[i].card_val << std::endl;
     std::cout << _cards[i].val << std::endl;
-
+  }
   }
 
 }
@@ -107,14 +109,16 @@ int sum = 0;
 }
 
 int who_won (std::vector<int>  hand1,std::vector<int> hand2,std::vector<Card> &cards){
-  if(sum(hand1,cards) > 21 && sum(hand2,cards) > 21){
-      if(sum(hand1,cards) > sum(hand2,cards))
+  if(sum(hand1,cards) < 22 && sum(hand2,cards) < 22){
+      if(sum(hand1,cards) > sum(hand2,cards) || (sum(hand1,cards) == sum(hand2,cards)) && (hand1.size() < hand2.size()))
       return 1;
-      else if(sum(hand1,cards) < sum(hand2,cards))
+      else if(sum(hand1,cards) < sum(hand2,cards) || (sum(hand1,cards) == sum(hand2,cards)) && (hand1.size() > hand2.size()))
       return 2;
-
-    }
+      else if((sum(hand1,cards) == sum(hand2,cards)) && (hand1.size() == hand2.size()))
       return 0;
+      else
+      return -1;
+}
 }
 
 

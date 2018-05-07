@@ -68,7 +68,7 @@ std::vector<Card> cards (32);
     std::copy(shuffled_deck.begin(), shuffled_deck.end(), std::back_inserter( dealer_list ) );
 
 
-        sprintf(server_ans,"%ld",dealer_list.front().id );
+        sprintf(server_ans,"%d",dealer_list.front().id );
         client1_deck.push_back(dealer_list.front().id);
         dealer_list.pop_front();
 
@@ -76,7 +76,7 @@ std::vector<Card> cards (32);
 
 
 
-        sprintf(server_ans,"%ld",dealer_list.front().id );
+        sprintf(server_ans,"%d",dealer_list.front().id );
         client2_deck.push_back(dealer_list.front().id);
         dealer_list.pop_front();
 
@@ -84,66 +84,75 @@ std::vector<Card> cards (32);
 
 
      while(1){
+       memset(&client1_ans, 0, sizeof client1_ans);
+       memset(&server_ans, 0, sizeof server_ans);
+
+
+
        if (sum(client1_deck,cards) < 15 ){
 
-          sprintf(server_ans,"%ld",dealer_list.front().id );
+          sprintf(server_ans,"%d",dealer_list.front().id );
           client1_deck.push_back(dealer_list.front().id);
           dealer_list.pop_front();
           send(client1_FD,server_ans,sizeof(server_ans),0);
           }
-        else if( sum(client2_deck,cards) < 22){
-          recv(client1_FD,&client1_ans,sizeof(client1_ans),0);
+        else {
+            recv(client1_FD,&client1_ans,sizeof(client1_ans),0);
             if(strcmp(client1_ans, "k")==0){
-            sprintf(server_ans,"%ld",dealer_list.front().id );
+            sprintf(server_ans,"%d",dealer_list.front().id );
             client1_deck.push_back(dealer_list.front().id);
             dealer_list.pop_front();
             send(client1_FD,server_ans,sizeof(server_ans),0);
             }
+            else   if( strcmp(client1_ans, "m")==0 || sum(client1_deck,cards) > 21)
+              break;
           }
-          if( strcmp(client1_ans, "m")==0 || sum(client1_deck,cards) > 21)
-          break;
+
         }
 
 
 
 
         while(1){
+          memset(&client2_ans, 0, sizeof client2_ans);
+          memset(&server_ans, 0, sizeof server_ans);
+
           if (sum(client2_deck,cards) < 15 ){
 
-             sprintf(server_ans,"%ld",dealer_list.front().id );
+             sprintf(server_ans,"%d",dealer_list.front().id );
              client2_deck.push_back(dealer_list.front().id);
              dealer_list.pop_front();
              send(client2_FD,server_ans,sizeof(server_ans),0);
              }
-          else if( sum(client2_deck,cards) < 22){
+          else {
               recv(client2_FD,&client2_ans,sizeof(client2_ans),0);
               if(client2_ans == "k"){
-              sprintf(server_ans,"%ld",dealer_list.front().id );
+              sprintf(server_ans,"%d",dealer_list.front().id );
               client2_deck.push_back(dealer_list.front().id);
               dealer_list.pop_front();
               send(client2_FD,server_ans,sizeof(server_ans),0);
                }
-             }
-             if( strcmp(client2_ans, "m")==0 || sum(client2_deck,cards) > 21)
-             break;
+               else if( strcmp(client2_ans, "m")==0 || sum(client2_deck,cards) > 21)
+                break;
+
            }
+         }
 
 
 
 
-      sprintf(server_ans,"%ld",client2_deck.size() );
+      sprintf(server_ans,"%d",client2_deck.size() );
       send(client1_FD,server_ans,sizeof(server_ans),0);
       for(int i = 0; i < client2_deck.size(); i++ ){
-        sprintf(server_ans,"%ld",client2_deck[i] );
-        send(client1_FD,server_ans,sizeof(server_ans),0);
+      sprintf(server_ans,"%d",client2_deck[i] );
+      send(client1_FD,server_ans,sizeof(server_ans),0);
       }
 
-      sprintf(server_ans,"%ld",client1_deck.size() );
+      sprintf(server_ans,"%d",client1_deck.size() );
       send(client2_FD,server_ans,sizeof(server_ans),0);
-      for(int i = 0; i < client2_deck.size(); i++ ){
-        sprintf(server_ans,"%ld",client1_deck[i] );
-        send(client2_FD,server_ans,sizeof(server_ans),0);
-
+      for(int j = 0; j < client1_deck.size(); j++ ){
+      sprintf(server_ans,"%d",client1_deck[j] );
+      send(client2_FD,server_ans,sizeof(server_ans),0);
       }
 
 
