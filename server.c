@@ -17,9 +17,8 @@ int main(int argc, char const *argv[]) {
   char client1_ans[255];
   char client2_ans[255];
   std::srand ( unsigned ( std::time(0) ) );
-
-    memset(&client1_ans, 0, sizeof client1_ans);
-    memset(&client2_ans, 0, sizeof client2_ans);
+  memset(&client1_ans, 0, sizeof client1_ans);
+  memset(&client2_ans, 0, sizeof client2_ans);
 
   server_FD=socket(AF_INET,SOCK_STREAM,0);
 
@@ -96,19 +95,25 @@ std::vector<Card> cards (32);
           dealer_list.pop_front();
           send(client1_FD,server_ans,sizeof(server_ans),0);
           }
-        else {
+        else if((sum(client1_deck,cards) < 22)){
             recv(client1_FD,&client1_ans,sizeof(client1_ans),0);
             if(strcmp(client1_ans, "k")==0){
+              std::cout << "lapot adok c1" << std::endl;
             sprintf(server_ans,"%d",dealer_list.front().id );
             client1_deck.push_back(dealer_list.front().id);
             dealer_list.pop_front();
             send(client1_FD,server_ans,sizeof(server_ans),0);
             }
-            else   if( strcmp(client1_ans, "m")==0 || sum(client1_deck,cards) > 21)
+            else if( (strcmp(client1_ans, "m")==0) )
               break;
           }
+          else
+          break;
 
         }
+
+
+
 
 
 
@@ -124,21 +129,27 @@ std::vector<Card> cards (32);
              dealer_list.pop_front();
              send(client2_FD,server_ans,sizeof(server_ans),0);
              }
-          else {
+          else if (sum(client2_deck,cards) < 22){
               recv(client2_FD,&client2_ans,sizeof(client2_ans),0);
               if(client2_ans == "k"){
+                std::cout << "lapot adok c2" << std::endl;
               sprintf(server_ans,"%d",dealer_list.front().id );
               client2_deck.push_back(dealer_list.front().id);
               dealer_list.pop_front();
               send(client2_FD,server_ans,sizeof(server_ans),0);
                }
-               else if( strcmp(client2_ans, "m")==0 || sum(client2_deck,cards) > 21)
+               else if( strcmp(client2_ans, "m")==0)
                 break;
 
            }
+           else
+           break;
          }
 
 
+
+sprintf(server_ans,"%d",1 );
+        send(client1_FD,server_ans,sizeof(server_ans),0);
 
 
       sprintf(server_ans,"%d",client2_deck.size() );
@@ -148,13 +159,18 @@ std::vector<Card> cards (32);
       send(client1_FD,server_ans,sizeof(server_ans),0);
       }
 
+      sprintf(server_ans,"%d",1 );
+      send(client2_FD,server_ans,sizeof(server_ans),0);
+
       sprintf(server_ans,"%d",client1_deck.size() );
       send(client2_FD,server_ans,sizeof(server_ans),0);
       for(int j = 0; j < client1_deck.size(); j++ ){
       sprintf(server_ans,"%d",client1_deck[j] );
       send(client2_FD,server_ans,sizeof(server_ans),0);
       }
-
+      sprintf(server_ans,"%d",2 );
+      send(client1_FD,server_ans,sizeof(server_ans),0);
+      send(client2_FD,server_ans,sizeof(server_ans),0);
 
 
 

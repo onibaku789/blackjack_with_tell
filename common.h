@@ -110,6 +110,10 @@ int sum = 0;
 
 int who_won (std::vector<int>  hand1,std::vector<int> hand2,std::vector<Card> &cards){
   if(sum(hand1,cards) < 22 && sum(hand2,cards) < 22){
+      if(sum(hand1,cards)>21)
+      return 2;
+      if( sum(hand2,cards)>21)
+      return 1;
       if(sum(hand1,cards) > sum(hand2,cards) || (sum(hand1,cards) == sum(hand2,cards)) && (hand1.size() < hand2.size()))
       return 1;
       else if(sum(hand1,cards) < sum(hand2,cards) || (sum(hand1,cards) == sum(hand2,cards)) && (hand1.size() > hand2.size()))
@@ -119,6 +123,7 @@ int who_won (std::vector<int>  hand1,std::vector<int> hand2,std::vector<Card> &c
       else
       return -1;
 }
+return -2;
 }
 
 

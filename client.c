@@ -63,25 +63,32 @@ while(1){
     show_hand(player_hand,cards);
 
     }
-    else{
+    else if(sum(player_hand,cards) < 22){
       std::cout<< "Lapkérés:k , Megállás:m "<<std::endl;
       std::cin >> player_ans;
       send(client_FD,player_ans,sizeof(player_ans),0);
       if( strcmp(player_ans, "k") == 0){
-        std::cout << "Lapot kértem"<< std::endl;
+        std::cout << "Lapot kértem" << std::endl;
       recv(client_FD,&server_response,sizeof(server_response),0);
       sscanf(server_response, "%d", &card_id);
       player_hand.push_back(card_id);
       show_hand(player_hand,cards);
       }
-      else if( strcmp(player_ans, "m")==0 || sum(player_hand,cards) > 21){
+      else if( strcmp(player_ans, "m")==0 ){
 
       std::cout << "Nem lapot kértem"<< std::endl;
       break;
-    }
+        }
       }
+      else
+      break;
 
 }
+
+      while(1){
+        recv(client_FD,&server_response,sizeof(server_response),0);
+
+        if(strcmp(server_response,"1") == 0){
       memset(&server_response, 0, sizeof server_response);
 
       int player2_hand_size,player2_card=0;
@@ -89,19 +96,24 @@ while(1){
       sscanf(server_response,"%d",&player2_hand_size );
 
       for(int i = 0; i < player2_hand_size; i++ ){
-        memset(&server_response, 0, sizeof server_response);
+
 
         recv(client_FD,&server_response,sizeof(server_response),0);
         sscanf(server_response,"%d",&player2_card );
         player2_hand.push_back(player2_card);
 
-      }
+        }
 
 
-std::cout << "A másik játékos lapjai: " << std::endl;
-show_hand(player2_hand,cards);
-std::cout << "A saját lapjaid: " << std::endl;
-show_hand(player_hand,cards);
+        recv(client_FD,&server_response,sizeof(server_response),0);
+
+        while(1){
+          recv(client_FD,&server_response,sizeof(server_response),0);
+            if(strcmp(server_response,"2") == 0){
+              std::cout << "A másik játékos lapjai: " << std::endl;
+              show_hand(player2_hand,cards);
+              std::cout << "A saját lapjaid: " << std::endl;
+              show_hand(player_hand,cards);
 
 
 if (who_won(player_hand,player2_hand,cards) == 1)
@@ -112,16 +124,19 @@ else if(who_won(player_hand,player2_hand,cards) == 0)
     std::cout << "Döntetlen ??" << std::endl;
 else
 std::cout << "-1" << std::endl;
-
+break;
+  }
+  }
   break;
+
+}
 }
 
 
 
+break;
 
-
-
-
+}
 
     close(client_FD);
   return 0;
