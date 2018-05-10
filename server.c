@@ -67,110 +67,50 @@ std::vector<Card> cards (32);
     std::copy(shuffled_deck.begin(), shuffled_deck.end(), std::back_inserter( dealer_list ) );
 
 
-        sprintf(server_ans,"%d",dealer_list.front().id );
-        client1_deck.push_back(dealer_list.front().id);
-        dealer_list.pop_front();
+        give_cards(client1_FD,client1_deck,dealer_list);
+        give_cards(client2_FD,client2_deck,dealer_list);
 
-        send(client1_FD,server_ans,sizeof(server_ans),0);
+      while(sum(client1_deck,cards) < 15){
+      give_cards(client1_FD,client1_deck,dealer_list);
+      //show_deck(client1_deck,cards);
+      }
 
+      while(sum(client2_deck,cards) < 15){
+      give_cards(client2_FD,client2_deck,dealer_list);
+      //show_deck(client2_deck,cards);
+      }
 
-
-        sprintf(server_ans,"%d",dealer_list.front().id );
-        client2_deck.push_back(dealer_list.front().id);
-        dealer_list.pop_front();
-
-        send(client2_FD,server_ans,sizeof(server_ans),0);
-
-
-     while(1){
-       memset(&client1_ans, 0, sizeof client1_ans);
-       memset(&server_ans, 0, sizeof server_ans);
-
-
-
-       if (sum(client1_deck,cards) < 15 ){
-
-          sprintf(server_ans,"%d",dealer_list.front().id );
-          client1_deck.push_back(dealer_list.front().id);
-          dealer_list.pop_front();
-          send(client1_FD,server_ans,sizeof(server_ans),0);
-          }
-        else if((sum(client1_deck,cards) < 22)){
-            recv(client1_FD,&client1_ans,sizeof(client1_ans),0);
-            if(strcmp(client1_ans, "k")==0){
-              std::cout << "lapot adok c1" << std::endl;
-            sprintf(server_ans,"%d",dealer_list.front().id );
-            client1_deck.push_back(dealer_list.front().id);
-            dealer_list.pop_front();
-            send(client1_FD,server_ans,sizeof(server_ans),0);
-            }
-            else if( (strcmp(client1_ans, "m")==0) )
-              break;
-          }
-          else
-          break;
-
-        }
-
-
-
-
-
-
-
-        while(1){
-          memset(&client2_ans, 0, sizeof client2_ans);
-          memset(&server_ans, 0, sizeof server_ans);
-
-          if (sum(client2_deck,cards) < 15 ){
-
-             sprintf(server_ans,"%d",dealer_list.front().id );
-             client2_deck.push_back(dealer_list.front().id);
-             dealer_list.pop_front();
-             send(client2_FD,server_ans,sizeof(server_ans),0);
-             }
-          else if (sum(client2_deck,cards) < 22){
-              recv(client2_FD,&client2_ans,sizeof(client2_ans),0);
-              if(client2_ans == "k"){
-                std::cout << "lapot adok c2" << std::endl;
-              sprintf(server_ans,"%d",dealer_list.front().id );
-              client2_deck.push_back(dealer_list.front().id);
-              dealer_list.pop_front();
-              send(client2_FD,server_ans,sizeof(server_ans),0);
-               }
-               else if( strcmp(client2_ans, "m")==0)
-                break;
-
-           }
-           else
-           break;
-         }
-
-
-
-sprintf(server_ans,"%d",1 );
-        send(client1_FD,server_ans,sizeof(server_ans),0);
-
-
-      sprintf(server_ans,"%d",client2_deck.size() );
-      send(client1_FD,server_ans,sizeof(server_ans),0);
-      for(int i = 0; i < client2_deck.size(); i++ ){
+      while(sum(client1_deck,cards) < 22){
+      recv(client1_FD,&server_ans,sizeof(server_ans),0);
+      if(strcmp(server_ans,"k")==0)
+      give_cards(client1_FD,client1_deck,dealer_list);
+      if(strcmp(server_ans,"m")==0)
+      break;
+    }
+      while(sum(client2_deck,cards) < 22){
+      recv(client2_FD,&server_ans,sizeof(server_ans),0);
+      if(strcmp(server_ans,"k")==0)
+      give_cards(client2_FD,client2_deck,dealer_list);
+      if(strcmp(server_ans,"m")==0)
+      break;
+    }
+    sprintf(server_ans,"%d",client2_deck.size() );
+    send(client1_FD,server_ans,sizeof server_ans,0);
+    for(int i = 0; i<client2_deck.size();i++){
       sprintf(server_ans,"%d",client2_deck[i] );
-      send(client1_FD,server_ans,sizeof(server_ans),0);
-      }
+      send(client1_FD,server_ans,sizeof server_ans,0);
+    }
 
-      sprintf(server_ans,"%d",1 );
-      send(client2_FD,server_ans,sizeof(server_ans),0);
+    sprintf(server_ans,"%d",client1_deck.size() );
+    send(client2_FD,server_ans,sizeof server_ans,0);
+    for(int i = 0; i<client1_deck.size();i++){
+      sprintf(server_ans,"%d",client1_deck[i] );
+      send(client2_FD,server_ans,sizeof server_ans,0);
+    }
 
-      sprintf(server_ans,"%d",client1_deck.size() );
-      send(client2_FD,server_ans,sizeof(server_ans),0);
-      for(int j = 0; j < client1_deck.size(); j++ ){
-      sprintf(server_ans,"%d",client1_deck[j] );
-      send(client2_FD,server_ans,sizeof(server_ans),0);
-      }
-      sprintf(server_ans,"%d",2 );
-      send(client1_FD,server_ans,sizeof(server_ans),0);
-      send(client2_FD,server_ans,sizeof(server_ans),0);
+    strcpy(server_ans,"hirdetes");
+    send(client1_FD,server_ans,sizeof server_ans,0);
+    send(client2_FD,server_ans,sizeof server_ans,0);
 
 
 

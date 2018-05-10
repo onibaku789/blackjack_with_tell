@@ -63,7 +63,7 @@ std::vector<Card>  shuffle_deck(std::vector<Card> _cards){
 
 }
 
-void show_deck(std::vector<int> v,const std::vector<Card> &_cards){
+void show_deck(std::vector<int> &v,const std::vector<Card> &_cards){
 
 for(int j = 0; j<v.size();j++)
 for(int i =0;i<_cards.size();i++)
@@ -77,6 +77,21 @@ for(int i =0;i<_cards.size();i++)
     std::cout << _cards[i].val << std::endl;
   }
   }
+
+}
+
+void show_deck(std::list<Card> & _cards){
+
+for(std::list<Card>::iterator  i = _cards.begin(); i!=_cards.end();i++){
+
+    std::cout << "=======================" << std::endl;
+
+    std::cout << i->id << std::endl;
+    std::cout << i->color << std::endl;
+    std::cout << i->card_val << std::endl;
+    std::cout << i->val << std::endl;
+  }
+
 
 }
 
@@ -96,13 +111,13 @@ int sum = 0;
 
 }
 
-int sum( std::vector<int>  hand,std::vector<Card> &cards) {
+int sum( std::vector<int>  hand, std::vector<Card> &cards) {
 
 int sum = 0;
   for(int i = 0; i< hand.size();i++){
     for(int j = 0; j < cards.size();j++){
       if(hand[i]==cards[j].id)
-    sum+=cards[j].card_val;
+      sum+=cards[j].card_val;
       }
   }
     return sum;
@@ -110,22 +125,36 @@ int sum = 0;
 
 int who_won (std::vector<int>  hand1,std::vector<int> hand2,std::vector<Card> &cards){
   if(sum(hand1,cards) < 22 && sum(hand2,cards) < 22){
-      if(sum(hand1,cards)>21)
-      return 2;
-      if( sum(hand2,cards)>21)
+      if(sum(hand1,cards) > sum(hand2,cards) || (sum(hand1,cards) < 22 && sum(hand2,cards) > 22) )
       return 1;
-      if(sum(hand1,cards) > sum(hand2,cards) || (sum(hand1,cards) == sum(hand2,cards)) && (hand1.size() < hand2.size()))
-      return 1;
-      else if(sum(hand1,cards) < sum(hand2,cards) || (sum(hand1,cards) == sum(hand2,cards)) && (hand1.size() > hand2.size()))
+      else if(sum(hand1,cards) < sum(hand2,cards) || (sum(hand2,cards) < 22 && sum(hand1,cards) > 22) )
       return 2;
       else if((sum(hand1,cards) == sum(hand2,cards)) && (hand1.size() == hand2.size()))
       return 0;
       else
       return -1;
 }
-return -2;
+return 0;
 }
 
+void give_cards(int client_FD, std::vector<int> &client_deck,std::list<Card> & dealer_list){
+      char server_ans [50];
+     sprintf(server_ans,"%d",dealer_list.front().id );
+     client_deck.push_back(dealer_list.front().id);
+     dealer_list.pop_front();
+     send(client_FD,server_ans,sizeof(server_ans),0);
+     std::cout<<server_ans<<std::endl;
+
+     }
+
+void recv_cards(int server_FD, std::vector<int>&client_deck){
+  int card_id;
+    char server_ans [50];
+  recv(server_FD,&server_ans,sizeof(server_ans),0);
+  sscanf(server_ans, "%d", &card_id);
+  client_deck.push_back(card_id);
+   std::cout<<server_ans<<std::endl;
+}
 
 
 
