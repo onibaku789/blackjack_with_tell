@@ -123,18 +123,21 @@ int sum = 0;
     return sum;
 }
 
-int who_won (std::vector<int>  hand1,std::vector<int> hand2,std::vector<Card> &cards){
-  if(sum(hand1,cards) < 22 && sum(hand2,cards) < 22){
-      if(sum(hand1,cards) > sum(hand2,cards) || (sum(hand1,cards) < 22 && sum(hand2,cards) > 22) )
+int who_won (std::vector<int>  &hand1,std::vector<int> &hand2,std::vector<Card> &cards){
+
+      if((sum(hand1,cards) < 22 && sum(hand2,cards) > 21))
+      return 1;
+      if((sum(hand2,cards) < 22 && sum(hand1,cards) > 21))
+      return 2;
+      if(sum(hand1,cards) > sum(hand2,cards) )
       return 1;
       else if(sum(hand1,cards) < sum(hand2,cards) || (sum(hand2,cards) < 22 && sum(hand1,cards) > 22) )
       return 2;
-      else if((sum(hand1,cards) == sum(hand2,cards)) && (hand1.size() == hand2.size()))
+      else if((sum(hand1,cards) == sum(hand2,cards)))
       return 0;
       else
       return -1;
-}
-return 0;
+
 }
 
 void give_cards(int client_FD, std::vector<int> &client_deck,std::list<Card> & dealer_list){
@@ -143,7 +146,7 @@ void give_cards(int client_FD, std::vector<int> &client_deck,std::list<Card> & d
      client_deck.push_back(dealer_list.front().id);
      dealer_list.pop_front();
      send(client_FD,server_ans,sizeof(server_ans),0);
-     std::cout<<server_ans<<std::endl;
+    // std::cout<<server_ans<<std::endl;
 
      }
 
@@ -153,7 +156,7 @@ void recv_cards(int server_FD, std::vector<int>&client_deck){
   recv(server_FD,&server_ans,sizeof(server_ans),0);
   sscanf(server_ans, "%d", &card_id);
   client_deck.push_back(card_id);
-   std::cout<<server_ans<<std::endl;
+  // std::cout<<server_ans<<std::endl;
 }
 
 

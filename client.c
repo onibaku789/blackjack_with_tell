@@ -87,8 +87,11 @@ else if(who_won(player_hand,player2_hand,cards)==2)
   std::cout << "vesztettél" << std::endl;
 }
 
-
-
+/*std::cout << "Szeretnél újat indítani? (i/n)" << std::endl;
+std::cin >> client_ans;
+send(server_FD,client_ans,sizeof client_ans,0 );
+recv(server_FD,&server_ans,sizeof(server_ans),0);
+if(!(strcmp(client_ans,"i")==0) && !(strcmp(server_ans,"i")==0))*/
 break;
 }
 
